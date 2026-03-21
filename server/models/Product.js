@@ -65,6 +65,23 @@ const productSchema = new mongoose.Schema({
             enum: ['summer', 'monsoon', 'winter', 'all_season']
         }]
     },
+    occasion: [{
+        type: String,
+        enum: ['daily_casual', 'office', 'wedding', 'festive', 'party', 'traditional']
+    }],
+
+    // Fabric is critical in Indian fashion — silk for weddings, cotton for daily
+    fabric: {
+        type: String,
+        enum: ['cotton', 'silk', 'linen', 'polyester', 'denim',
+            'wool', 'georgette', 'chiffon', 'other']
+    },
+
+    season: [{
+        type: String,
+        enum: ['summer', 'monsoon', 'winter', 'all_season']
+    }],
+    aiTags: [String],  // e.g. ['ethnic', 'fusion', 'block-print', 'floral']
     sizes: [String],
     colors: [String],
     inStock: {
