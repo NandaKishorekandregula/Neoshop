@@ -1,0 +1,593 @@
+{
+    "very_fair_warm": {
+        "displayName": "Very Fair Warm",
+        "description": "Very light skin with golden/peachy undertones",
+        "commonIn": [
+            "Kashmir",
+            "Punjab",
+            "Himachal Pradesh"
+        ],
+        "bestColors": [
+            "Peach",
+            "Coral",
+            "Warm Pink",
+            "Gold",
+            "Ivory",
+            "Light Camel",
+            "Blush",
+            "Warm Beige",
+            "Champagne"
+        ],
+        "avoidColors": [
+            "Neon Yellow",
+            "Lime Green",
+            "Very Pale Pastels"
+        ],
+        "metals": [
+            "Gold",
+            "Rose Gold"
+        ],
+        "denimShades": [
+            "Light wash",
+            "Medium wash"
+        ],
+        "leatherColors": [
+            "Tan",
+            "Cognac",
+            "Light Brown"
+        ],
+        "seasonalType": "spring"
+    },
+    "very_fair_cool": {
+        "displayName": "Very Fair Cool",
+        "description": "Very light skin with pink/rosy undertones",
+        "commonIn": [
+            "Kashmir",
+            "North India"
+        ],
+        "bestColors": [
+            "Baby Blue",
+            "Lavender",
+            "Soft Pink",
+            "Mint",
+            "Pale Lilac",
+            "Ice Blue",
+            "Rose",
+            "Pearl White"
+        ],
+        "avoidColors": [
+            "Orange",
+            "Warm Yellow",
+            "Rust",
+            "Camel"
+        ],
+        "metals": [
+            "Silver",
+            "White Gold",
+            "Platinum"
+        ],
+        "denimShades": [
+            "Light wash",
+            "Sky blue"
+        ],
+        "leatherColors": [
+            "Black",
+            "Light Gray"
+        ],
+        "seasonalType": "summer"
+    },
+    "fair_warm": {
+        "displayName": "Fair Warm",
+        "description": "Light skin with warm golden undertones",
+        "commonIn": [
+            "North India",
+            "Punjab",
+            "Rajasthan"
+        ],
+        "bestColors": [
+            "Coral",
+            "Peach",
+            "Warm Yellow",
+            "Camel",
+            "Terracotta",
+            "Warm Pink",
+            "Gold",
+            "Burnt Orange"
+        ],
+        "avoidColors": [
+            "Cool Gray",
+            "Icy Blue",
+            "Harsh Silver"
+        ],
+        "metals": [
+            "Gold",
+            "Bronze",
+            "Rose Gold"
+        ],
+        "denimShades": [
+            "Medium wash",
+            "Light wash"
+        ],
+        "leatherColors": [
+            "Tan",
+            "Cognac",
+            "Camel"
+        ],
+        "seasonalType": "spring"
+    },
+    "fair_cool": {
+        "displayName": "Fair Cool",
+        "description": "Light skin with cool pink/blue undertones",
+        "commonIn": [
+            "North India",
+            "UP"
+        ],
+        "bestColors": [
+            "Navy",
+            "Cobalt Blue",
+            "Lavender",
+            "Burgundy",
+            "Emerald",
+            "Cool Pink",
+            "Charcoal",
+            "Pure White"
+        ],
+        "avoidColors": [
+            "Orange",
+            "Rust",
+            "Mustard",
+            "Warm Brown"
+        ],
+        "metals": [
+            "Silver",
+            "White Gold"
+        ],
+        "denimShades": [
+            "Dark wash",
+            "Indigo"
+        ],
+        "leatherColors": [
+            "Black",
+            "Navy",
+            "Burgundy"
+        ],
+        "seasonalType": "summer"
+    },
+    "wheatish_light_warm": {
+        "displayName": "Wheatish Light Warm",
+        "description": "Light wheatish with golden undertones — very common in India",
+        "commonIn": [
+            "UP",
+            "Rajasthan",
+            "MP",
+            "Gujarat"
+        ],
+        "bestColors": [
+            "Mustard Yellow",
+            "Terracotta",
+            "Olive Green",
+            "Coral",
+            "Warm Orange",
+            "Camel",
+            "Gold",
+            "Rust",
+            "Burnt Sienna"
+        ],
+        "avoidColors": [
+            "Pure White",
+            "Icy Pastels",
+            "Cool Gray"
+        ],
+        "metals": [
+            "Gold",
+            "Bronze",
+            "Copper"
+        ],
+        "denimShades": [
+            "Medium wash",
+            "Dark wash"
+        ],
+        "leatherColors": [
+            "Brown",
+            "Tan",
+            "Cognac",
+            "Camel"
+        ],
+        "seasonalType": "autumn"
+    },
+    "wheatish_light_olive": {
+        "displayName": "Wheatish Light Olive",
+        "description": "Light wheatish with greenish/muted undertones",
+        "commonIn": [
+            "Central India",
+            "South India"
+        ],
+        "bestColors": [
+            "Olive Green",
+            "Sage",
+            "Khaki",
+            "Warm Taupe",
+            "Muted Coral",
+            "Turmeric",
+            "Warm Mustard",
+            "Earthy Brown"
+        ],
+        "avoidColors": [
+            "Bright Pink",
+            "Neon",
+            "Very Cool Blues"
+        ],
+        "metals": [
+            "Gold",
+            "Antique Gold",
+            "Copper"
+        ],
+        "denimShades": [
+            "Olive wash",
+            "Dark wash"
+        ],
+        "leatherColors": [
+            "Olive Brown",
+            "Khaki",
+            "Dark Tan"
+        ],
+        "seasonalType": "autumn"
+    },
+    "wheatish_medium_warm": {
+        "displayName": "Wheatish Medium Warm",
+        "description": "The most common Indian skin tone — medium with golden warmth",
+        "commonIn": [
+            "Pan-India — the most common tone"
+        ],
+        "bestColors": [
+            "Mustard",
+            "Terracotta",
+            "Rust",
+            "Warm Red",
+            "Coral",
+            "Olive",
+            "Camel",
+            "Deep Orange",
+            "Turmeric Yellow",
+            "Burnt Orange",
+            "Warm Brown"
+        ],
+        "avoidColors": [
+            "Pure White",
+            "Pastels",
+            "Pale Yellow",
+            "Cool Gray"
+        ],
+        "metals": [
+            "Gold",
+            "Bronze",
+            "Copper",
+            "Rose Gold"
+        ],
+        "denimShades": [
+            "Dark wash",
+            "Medium wash",
+            "Black denim"
+        ],
+        "leatherColors": [
+            "Brown",
+            "Cognac",
+            "Tan",
+            "Chocolate"
+        ],
+        "seasonalType": "autumn"
+    },
+    "wheatish_medium_olive": {
+        "displayName": "Wheatish Medium Olive",
+        "description": "Medium skin with olive-green undertones — classic South/Central Indian",
+        "commonIn": [
+            "Andhra Pradesh",
+            "Telangana",
+            "Karnataka"
+        ],
+        "bestColors": [
+            "Olive Green",
+            "Jade",
+            "Forest Green",
+            "Warm Teal",
+            "Earthy Brown",
+            "Turmeric",
+            "Saffron",
+            "Peacock Blue"
+        ],
+        "avoidColors": [
+            "Pastel Pink",
+            "Baby Blue",
+            "Lilac",
+            "Cool Mint"
+        ],
+        "metals": [
+            "Gold",
+            "Antique Gold"
+        ],
+        "denimShades": [
+            "Dark wash",
+            "Olive tinted"
+        ],
+        "leatherColors": [
+            "Olive Brown",
+            "Dark Brown",
+            "Chocolate"
+        ],
+        "seasonalType": "autumn"
+    },
+    "wheatish_medium_cool": {
+        "displayName": "Wheatish Medium Cool",
+        "description": "Medium skin with subtle cool/pink undertones",
+        "commonIn": [
+            "West Bengal",
+            "Odisha",
+            "Parts of Maharashtra"
+        ],
+        "bestColors": [
+            "Navy",
+            "Burgundy",
+            "Deep Purple",
+            "Forest Green",
+            "Cobalt Blue",
+            "Magenta",
+            "Deep Teal",
+            "Charcoal"
+        ],
+        "avoidColors": [
+            "Orange",
+            "Rust",
+            "Mustard",
+            "Warm Beige"
+        ],
+        "metals": [
+            "Silver",
+            "White Gold"
+        ],
+        "denimShades": [
+            "Dark wash",
+            "Indigo"
+        ],
+        "leatherColors": [
+            "Black",
+            "Burgundy",
+            "Dark Navy"
+        ],
+        "seasonalType": "winter"
+    },
+    "dusky_warm": {
+        "displayName": "Dusky Warm",
+        "description": "Deeper skin with warm golden undertones — stunning with jewel tones",
+        "commonIn": [
+            "South India",
+            "West Bengal",
+            "Northeast India"
+        ],
+        "bestColors": [
+            "Gold",
+            "Saffron",
+            "Deep Orange",
+            "Warm Red",
+            "Royal Blue",
+            "Emerald Green",
+            "Magenta",
+            "Deep Coral",
+            "Copper"
+        ],
+        "avoidColors": [
+            "Very Light Pastels",
+            "Beige",
+            "Nude",
+            "Pale Yellow"
+        ],
+        "metals": [
+            "Gold",
+            "Copper",
+            "Bronze"
+        ],
+        "denimShades": [
+            "Dark wash",
+            "Black denim"
+        ],
+        "leatherColors": [
+            "Brown",
+            "Cognac",
+            "Dark Chocolate"
+        ],
+        "seasonalType": "autumn"
+    },
+    "dusky_olive": {
+        "displayName": "Dusky Olive",
+        "description": "Deeper skin with olive undertones — rich and striking",
+        "commonIn": [
+            "Tamil Nadu",
+            "Kerala",
+            "Telangana"
+        ],
+        "bestColors": [
+            "Emerald Green",
+            "Deep Teal",
+            "Peacock Blue",
+            "Jade",
+            "Forest Green",
+            "Saffron Orange",
+            "Deep Gold",
+            "Rich Brown"
+        ],
+        "avoidColors": [
+            "Light Pastels",
+            "Beige",
+            "Pale Colors",
+            "Off-White"
+        ],
+        "metals": [
+            "Gold",
+            "Antique Gold"
+        ],
+        "denimShades": [
+            "Dark wash",
+            "Black denim",
+            "Indigo"
+        ],
+        "leatherColors": [
+            "Dark Chocolate",
+            "Deep Brown",
+            "Black"
+        ],
+        "seasonalType": "autumn"
+    },
+    "dusky_cool": {
+        "displayName": "Dusky Cool",
+        "description": "Deeper skin with cool/blue undertones",
+        "commonIn": [
+            "Parts of Tamil Nadu",
+            "Coastal Karnataka"
+        ],
+        "bestColors": [
+            "Cobalt Blue",
+            "Royal Purple",
+            "Magenta",
+            "True Red",
+            "Teal",
+            "Navy",
+            "Violet",
+            "Deep Burgundy"
+        ],
+        "avoidColors": [
+            "Orange",
+            "Rust",
+            "Beige",
+            "Warm Earth Tones"
+        ],
+        "metals": [
+            "Silver",
+            "White Gold",
+            "Platinum"
+        ],
+        "denimShades": [
+            "Black",
+            "Very dark wash"
+        ],
+        "leatherColors": [
+            "Black",
+            "Deep Navy"
+        ],
+        "seasonalType": "winter"
+    },
+    "deep_warm": {
+        "displayName": "Deep Warm",
+        "description": "Deep rich skin with warm golden undertones — bold jewel tones shine",
+        "commonIn": [
+            "Tamil Nadu",
+            "Kerala",
+            "Andhra Pradesh"
+        ],
+        "bestColors": [
+            "Royal Gold",
+            "Deep Saffron",
+            "Rich Red",
+            "Emerald",
+            "Royal Blue",
+            "Bright Orange",
+            "Fuchsia",
+            "Deep Coral"
+        ],
+        "avoidColors": [
+            "Beige",
+            "Nude",
+            "Pale Pastels",
+            "Off White"
+        ],
+        "metals": [
+            "Gold",
+            "Copper",
+            "Bronze"
+        ],
+        "denimShades": [
+            "Black denim",
+            "Very dark wash"
+        ],
+        "leatherColors": [
+            "Dark Brown",
+            "Chocolate",
+            "Cognac"
+        ],
+        "seasonalType": "autumn"
+    },
+    "deep_olive": {
+        "displayName": "Deep Olive",
+        "description": "Deep skin with olive undertones — earthy rich tones look stunning",
+        "commonIn": [
+            "Tamil Nadu",
+            "Kerala deep south"
+        ],
+        "bestColors": [
+            "Emerald Green",
+            "Deep Teal",
+            "Peacock Blue",
+            "Forest Green",
+            "Rich Gold",
+            "Ochre",
+            "Warm Amber",
+            "Deep Rust"
+        ],
+        "avoidColors": [
+            "Pastels",
+            "Muted Colors",
+            "Gray",
+            "Beige"
+        ],
+        "metals": [
+            "Gold",
+            "Antique Bronze"
+        ],
+        "denimShades": [
+            "Black denim"
+        ],
+        "leatherColors": [
+            "Black",
+            "Very Dark Brown"
+        ],
+        "seasonalType": "autumn"
+    },
+    "deep_cool": {
+        "displayName": "Deep Cool",
+        "description": "Deep skin with cool undertones — high contrast looks are stunning",
+        "commonIn": [
+            "Coastal Tamil Nadu",
+            "Kerala"
+        ],
+        "bestColors": [
+            "Pure White",
+            "Royal Blue",
+            "Cobalt",
+            "Fuchsia",
+            "Magenta",
+            "Electric Purple",
+            "True Red",
+            "Emerald",
+            "Bright Teal"
+        ],
+        "avoidColors": [
+            "Brown",
+            "Rust",
+            "Warm Earth Tones",
+            "Orange"
+        ],
+        "metals": [
+            "Silver",
+            "Platinum",
+            "White Gold"
+        ],
+        "denimShades": [
+            "White",
+            "Very pale",
+            "Black"
+        ],
+        "leatherColors": [
+            "White",
+            "Black"
+        ],
+        "seasonalType": "winter"
+    }
+}
