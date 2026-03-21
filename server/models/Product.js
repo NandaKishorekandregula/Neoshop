@@ -31,15 +31,39 @@ const productSchema = new mongoose.Schema({
     colorData: {
         name: String,
         hex: String,
-        rgb: {
-            r: Number,
-            g: Number,
-            b: Number
-        },
+        rgb: { r: Number, g: Number, b: Number },
+
+        // Expanded — includes Indian-specific color families
         colorFamily: {
             type: String,
-            enum: ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'black', 'white', 'gray', 'brown']
-        }
+            enum: [
+                'red', 'blue', 'green', 'yellow', 'orange', 'purple',
+                'pink', 'black', 'white', 'gray', 'brown',
+                'olive',    // Indian kurtas, salwars
+                'maroon',   // Wedding, festive staple
+                'teal',     // Indian fusion wear
+                'coral',    // Summer Indian fashion
+                'mustard',  // Warm skin tone essential
+                'navy',     // Formal menswear
+                'beige'     // Neutral for Indian tones
+            ]
+        },
+
+        // Which Indian profile keys this product suits
+        // e.g. ['wheatish_medium_warm', 'dusky_olive']
+        suitableFor: [{ type: String }],
+
+        // Which occasions this color works for
+        occasionSuitability: [{
+            type: String,
+            enum: ['daily_casual', 'office', 'wedding', 'festive', 'party', 'traditional']
+        }],
+
+        // Indian climate seasons
+        seasonSuitability: [{
+            type: String,
+            enum: ['summer', 'monsoon', 'winter', 'all_season']
+        }]
     },
     sizes: [String],
     colors: [String],
