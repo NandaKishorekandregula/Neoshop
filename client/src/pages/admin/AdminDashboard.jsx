@@ -4,7 +4,7 @@ import {
     Tooltip, ResponsiveContainer, BarChart, Bar
 } from 'recharts';
 import API from '../../utils/api';
-import Loading from '../../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 
 // StatCard updated with Glassmorphism Tailwind classes
 function StatCard({ label, value, icon, trend, trendUp, iconBg, iconColor }) {

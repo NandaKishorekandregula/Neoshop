@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../utils/api';
-import Loading from '../components/common/Loading';
-import { useAuth } from '../context/AuthContext';
+import API from '../../utils/api';
+import Loading from '../../components/2d/common/Loading';
+import { useAuth } from '../../context/AuthContext';
 
 function ProductDetail() {
     const { id } = useParams();

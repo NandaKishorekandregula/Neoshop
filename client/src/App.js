@@ -13,8 +13,8 @@ import Global3DOverlay from './components/3d/Global3DOverlay';
 import LandingPage2D from './pages/2d/LandingPage';
 import Products2D from './pages/2d/Products';
 import Profile2D from './pages/2d/Profile';
-import Cart2D from './pages/Cart';
-import Checkout2D from './pages/Checkout';
+import Cart2D from './pages/2d/Cart';
+import Checkout2D from './pages/2d/Checkout';
 
 // --- 3D PAGES ---
 import LandingPage3D from './pages/3d/LandingPage3D';
@@ -24,7 +24,7 @@ import Cart3D from './pages/3d/Cart3D';
 import Checkout3D from './pages/3d/Checkout3D';
 
 // --- SHARED / STANDARD PAGES ---
-import ProductDetail from './pages/ProductDetail';
+import ProductDetail from './pages/2d/ProductDetail';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -37,6 +37,9 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
+
+// --- AI SECTION--
+import AIAnalysis from './pages/AIAnalysis';
 
 function App() {
   const [is3DMode, setIs3DMode] = useState(true);
@@ -99,6 +102,7 @@ function App() {
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
 
             {/* Admin Routes */}
             <Route
@@ -117,6 +121,7 @@ function App() {
                 </AdminRoute>
               }
             />
+            <Route path="/ai-advisor" element={<AIAnalysis />} />
 
           </Routes>
         </main>

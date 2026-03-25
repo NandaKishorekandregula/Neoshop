@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../utils/api';
-import Loading from '../../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Float, Text, RoundedBox, Image as DreiImage, Sparkles } from '@react-three/drei';
 
@@ -10,33 +10,28 @@ function VIPCard({ user }) {
     const cardRef = useRef();
 
     useFrame((state, delta) => {
-        cardRef.current.rotation.y += delta * 0.3; // Premium, smooth spin
-        cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.1; // Gentle float
+        cardRef.current.rotation.y += delta * 0.3;
+        cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.1;
     });
 
     const memberDate = new Date(user?.createdAt || Date.now()).getFullYear();
 
     return (
         <group ref={cardRef} scale={1.2}>
-            {/* The physical card body */}
             <RoundedBox args={[3.5, 2.2, 0.08]} radius={0.15} smoothness={4}>
                 <meshPhysicalMaterial color="#111827" metalness={0.8} roughness={0.2} clearcoat={1} clearcoatRoughness={0.1} />
             </RoundedBox>
 
-            {/* --- FRONT OF CARD --- */}
             <group position={[0, 0, 0.05]}>
-                {/* Gold Chip */}
                 <RoundedBox args={[0.5, 0.35, 0.01]} position={[-1.2, 0.4, 0]} radius={0.05}>
                     <meshStandardMaterial color="#fbbf24" metalness={1} roughness={0.2} />
                 </RoundedBox>
-
                 <Text position={[0.8, 0.4, 0]} fontSize={0.25} color="#e879f9" fontStyle="italic" letterSpacing={0.1} anchorX="center" anchorY="middle">
                     NEOSHOP
                 </Text>
                 <Text position={[0.8, 0.1, 0]} fontSize={0.12} color="gray" letterSpacing={0.4} anchorX="center" anchorY="middle">
                     {user?.role === 'admin' ? 'ADMINISTRATOR' : 'EXCLUSIVE MEMBER'}
                 </Text>
-
                 <Text position={[-1.4, -0.6, 0]} fontSize={0.2} color="white" anchorX="left" anchorY="middle">
                     {(user?.name || 'MEMBER').toUpperCase()}
                 </Text>
@@ -45,18 +40,14 @@ function VIPCard({ user }) {
                 </Text>
             </group>
 
-            {/* --- BACK OF CARD (Added Email!) --- */}
             <group position={[0, 0, -0.05]} rotation={[0, Math.PI, 0]}>
-                {/* Magnetic Stripe */}
                 <mesh position={[0, 0.5, 0]}>
                     <planeGeometry args={[3.5, 0.4]} />
                     <meshBasicMaterial color="#000000" />
                 </mesh>
-
                 <Text position={[0, -0.2, 0]} fontSize={0.12} color="gray" letterSpacing={0.2} anchorX="center" anchorY="middle">
                     AUTHORIZED USER
                 </Text>
-                {/* The User's Email */}
                 <Text position={[0, -0.5, 0]} fontSize={0.18} color="white" anchorX="center" anchorY="middle">
                     {user?.email || 'user@example.com'}
                 </Text>
@@ -65,34 +56,27 @@ function VIPCard({ user }) {
     );
 }
 
-// --- 🌟 NEW 3D COMPONENT: COLLECTOR's CARD (For Orders Tab) ---
+// --- 3D COMPONENT: COLLECTOR's CARD (For Orders Tab) ---
 function CollectorsCard({ latestImageUrl }) {
     const cardRef = useRef();
 
     useFrame((state, delta) => {
-        cardRef.current.rotation.y -= delta * 0.2; // Slow showcase spin
+        cardRef.current.rotation.y -= delta * 0.2;
         cardRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
     });
 
     return (
         <group ref={cardRef}>
-            {/* The Trading Card Slab */}
             <RoundedBox args={[2.8, 3.8, 0.15]} radius={0.1} smoothness={4}>
-                {/* Frosted dark glass aesthetic */}
                 <meshPhysicalMaterial color="#1f2937" metalness={0.6} roughness={0.3} clearcoat={1} />
             </RoundedBox>
-
-            {/* Glowing Inner Border */}
             <RoundedBox args={[2.6, 3.6, 0.16]} radius={0.08}>
                 <meshStandardMaterial color="#c084fc" emissive="#a855f7" emissiveIntensity={0.5} />
             </RoundedBox>
-
-            {/* Inner White Canvas for the Image */}
             <RoundedBox args={[2.5, 3.5, 0.17]} radius={0.06}>
                 <meshStandardMaterial color="#f8fafc" roughness={0.8} />
             </RoundedBox>
 
-            {/* --- FRONT OF TRADING CARD --- */}
             <group position={[0, 0, 0.1]}>
                 {latestImageUrl ? (
                     <Suspense fallback={null}>
@@ -103,8 +87,6 @@ function CollectorsCard({ latestImageUrl }) {
                         NO RECENT ORDERS
                     </Text>
                 )}
-
-                {/* Card Labels */}
                 <Text position={[0, -1.1, 0]} fontSize={0.15} color="#a855f7" fontStyle="italic" letterSpacing={0.2} anchorX="center" anchorY="middle">
                     LATEST ACQUISITION
                 </Text>
@@ -113,7 +95,6 @@ function CollectorsCard({ latestImageUrl }) {
                 </Text>
             </group>
 
-            {/* --- BACK OF TRADING CARD --- */}
             <group position={[0, 0, -0.1]} rotation={[0, Math.PI, 0]}>
                 <Text position={[0, 0, 0]} fontSize={0.4} color="#a855f7" fontStyle="italic" anchorX="center" anchorY="middle">
                     NEOSHOP
@@ -123,7 +104,6 @@ function CollectorsCard({ latestImageUrl }) {
                 </Text>
             </group>
 
-            {/* Premium Sparkles surrounding the collectible */}
             <Sparkles count={30} scale={4} size={2} speed={0.4} opacity={0.5} color="#e879f9" />
         </group>
     );
@@ -172,9 +152,9 @@ export default function Profile3D() {
         }
     };
 
-    // Grab the image of their most recent purchase
+    // ✅ Fix 1 — optional chaining so null product doesn't crash
     const latestImageUrl = orders.length > 0 && orders[0].items.length > 0
-        ? orders[0].items[0].product.images[0]
+        ? orders[0].items[0].product?.images?.[0] ?? null
         : null;
 
     const getStatusColor = (status) => {
@@ -193,7 +173,7 @@ export default function Profile3D() {
     return (
         <div className="w-full min-h-[calc(100vh-80px)] bg-[#F8F9FE] relative overflow-hidden flex flex-col lg:flex-row">
 
-            {/* --- RIGHT SIDE: THE DYNAMIC 3D CANVAS --- */}
+            {/* RIGHT SIDE: 3D CANVAS */}
             <div className="absolute inset-0 lg:relative lg:flex-1 h-[40vh] lg:h-auto z-0 bg-gradient-to-br from-[#F8F9FE] to-[#eef2fc]">
                 <Canvas camera={{ position: [0, 0, 5.5], fov: 45 }}>
                     <ambientLight intensity={1.5} />
@@ -204,14 +184,14 @@ export default function Profile3D() {
                 </Canvas>
             </div>
 
-            {/* --- LEFT SIDE: GLASSMORPHISM DASHBOARD --- */}
+            {/* LEFT SIDE: GLASSMORPHISM DASHBOARD */}
             <div className="w-full lg:w-[650px] h-full z-10 p-6 lg:p-12 overflow-y-auto no-scrollbar relative flex flex-col">
 
                 <h1 className="text-4xl font-black tracking-tighter mb-8 text-gray-900">
                     Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Headquarters.</span>
                 </h1>
 
-                {/* Dashboard Navigation Tabs */}
+                {/* Navigation Tabs */}
                 <div className="flex gap-2 mb-8 bg-white/50 backdrop-blur-md p-2 rounded-2xl border border-white shadow-sm overflow-x-auto no-scrollbar">
                     {user?.role !== 'admin' && (
                         <button onClick={() => setActiveTab('orders')} className={`flex-1 min-w-[120px] py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${activeTab === 'orders' ? `${neoGradient} text-white shadow-md` : 'text-gray-500 hover:bg-white'}`}>
@@ -228,16 +208,26 @@ export default function Profile3D() {
                     )}
                 </div>
 
-                {/* Tab Content Container */}
+                {/* Tab Content */}
                 <div className="bg-white/70 backdrop-blur-2xl rounded-[32px] shadow-[0_20px_40px_rgba(0,0,0,0.06)] border border-white p-8 mb-6">
 
                     {/* PROFILE TAB */}
                     {activeTab === 'profile' && (
                         <div className="animate-fadeIn space-y-6">
                             <div className="flex items-center gap-6 mb-8">
-                                <div className={`w-20 h-20 ${neoGradient} rounded-full flex items-center justify-center text-white text-3xl font-black shadow-lg`}>
-                                    {user?.name?.charAt(0).toUpperCase()}
-                                </div>
+                                {/* ✅ Show profile photo if available */}
+                                {user?.profilePhoto ? (
+                                    <img
+                                        src={user.profilePhoto}
+                                        alt="Profile"
+                                        className="w-20 h-20 rounded-full object-cover shadow-lg"
+                                        style={{ border: '3px solid #a855f7' }}
+                                    />
+                                ) : (
+                                    <div className={`w-20 h-20 ${neoGradient} rounded-full flex items-center justify-center text-white text-3xl font-black shadow-lg`}>
+                                        {user?.name?.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                                 <div>
                                     <h2 className="text-2xl font-black text-gray-900">{user?.name}</h2>
                                     <p className="text-gray-500 font-medium">{user?.email}</p>
@@ -251,7 +241,9 @@ export default function Profile3D() {
                                 <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100">
                                     <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Member Since</label>
                                     <p className="font-semibold text-gray-900">
-                                        {new Date(user?.createdAt || Date.now()).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                        {new Date(user?.createdAt || Date.now()).toLocaleDateString('en-IN', {
+                                            year: 'numeric', month: 'long', day: 'numeric'
+                                        })}
                                     </p>
                                 </div>
                             </div>
@@ -286,8 +278,17 @@ export default function Profile3D() {
 
                                             <div className="flex items-center gap-4">
                                                 <div className="flex -space-x-3">
+                                                    {/* ✅ Fix 2 — optional chaining on product images */}
                                                     {order.items.slice(0, 3).map((item, idx) => (
-                                                        <img key={item._id} src={item.product.images[0]} alt="" className="w-12 h-12 object-cover rounded-full border-2 border-white shadow-sm z-[3] relative" style={{ zIndex: 10 - idx }} />
+                                                        item.product && (
+                                                            <img
+                                                                key={item._id}
+                                                                src={item.product?.images?.[0]}
+                                                                alt=""
+                                                                className="w-12 h-12 object-cover rounded-full border-2 border-white shadow-sm relative"
+                                                                style={{ zIndex: 10 - idx }}
+                                                            />
+                                                        )
                                                     ))}
                                                 </div>
                                                 <div className="ml-auto text-right">

@@ -1,6 +1,6 @@
-import { useCart } from '../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
-import Loading from '../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 
 function Cart() {
     const { cart, loading, updateQuantity, removeFromCart, getTotal } = useCart();

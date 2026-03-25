@@ -1,7 +1,7 @@
 import React, { Suspense, useRef } from 'react';
 import { useCart } from '../../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
-import Loading from '../../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Float, Billboard, Image as DreiImage } from '@react-three/drei';
 

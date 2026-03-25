@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../../utils/api';
-import Loading from '../../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 
 const CATEGORIES = ['tops', 'bottoms', 'shoes', 'accessories', 'dresses'];
 

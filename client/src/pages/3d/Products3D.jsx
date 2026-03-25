@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import API from '../../utils/api';
 // 🌟 FIX: Import your new 3D Product Card instead of the 2D one
 import ProductCard3D from '../../components/3d/ProductCard3D';
-import Loading from '../../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 
 export default function Products3D() {
     const [searchParams, setSearchParams] = useSearchParams();

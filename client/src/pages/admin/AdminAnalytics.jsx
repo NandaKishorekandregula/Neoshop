@@ -5,7 +5,7 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import API from '../../utils/api';
-import Loading from '../../components/common/Loading';
+import Loading from '../../components/2d/common/Loading';
 
 const COLORS = ['#7C3AED', '#10B981', '#F59E0B', '#EF4444', '#3B82F6'];
 

@@ -70,6 +70,7 @@ export default function Navbar({ is3DMode }) {
                             <>
                                 <Link to="/products" className={linkClasses}>Products</Link>
                                 <Link to="/profile" className={linkClasses}>Profile</Link>
+                                <Link to="/ai-advisor">AI Advisor</Link>
                                 <Link to="/cart" className={`relative flex items-center ${linkClasses}`}>
                                     <span className="mr-1 text-lg">🛒</span> Cart
                                     {cartItemsCount > 0 && (

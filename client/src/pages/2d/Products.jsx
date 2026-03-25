@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import API from '../../utils/api';
-import ProductCard from '../../components/products/ProductCard';
-import Loading from '../../components/common/Loading';
+import ProductCard from '../../components/2d/products/ProductCard';
+import Loading from '../../components/2d/common/Loading';
 
 function Products() {
     const [searchParams, setSearchParams] = useSearchParams();
