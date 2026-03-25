@@ -36,6 +36,7 @@ exports.getDashboardStats = async (req, res) => {
     }
 };
 
+
 // Sales analytics
 exports.getSalesAnalytics = async (req, res) => {
     try {
