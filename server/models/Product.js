@@ -108,4 +108,24 @@ const productSchema = new mongoose.Schema({
     }
 });
 
+productSchema.index(
+    { name: 'text', description: 'text', 'colorData.colorFamily': 'text' },
+    { weights: { name: 10, 'colorData.colorFamily': 5, description: 1 } }
+);
+
+// 2. Compound Indexes: For common e-commerce filtering and sorting (ESR Rule)
+productSchema.index({ category: 1, price: 1 }); // Browsing categories + sorting by price
+productSchema.index({ occasion: 1, rating: -1 }); // Finding top-rated items for specific occasions
+productSchema.index({ 'colorData.colorFamily': 1, fabric: 1 }); // Filtering by color and fabric
+
+// 3. Multikey Indexes: For array fields (Crucial for your recommendation engine)
+productSchema.index({ aiTags: 1 });
+productSchema.index({ 'colorData.suitableFor': 1 });
+
+// 4. Partial Index: Saves RAM by only indexing the price of items actually in stock
+productSchema.index(
+    { price: 1 }, 
+    { partialFilterExpression: { inStock: true } }
+);
+
 module.exports = mongoose.model('Product', productSchema);

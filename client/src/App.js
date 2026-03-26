@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// 🌟 Added useEffect here
 import { useState, useEffect } from 'react';
-// 🌟 Added the Auth Context to monitor logins globally
 import { useAuth } from './context/AuthContext';
 
 // --- COMMON COMPONENTS ---
 import Navbar from './components/2d/common/Navbar';
 import Footer from './components/2d/common/Footer';
 import Global3DOverlay from './components/3d/Global3DOverlay';
+import AdminRoute from './components/admin/AdminRoute';
+import AdminLayout from './components/admin/AdminLayout';
 
 // --- 2D PAGES ---
 import LandingPage2D from './pages/2d/LandingPage';
@@ -25,32 +25,35 @@ import Checkout3D from './pages/3d/Checkout3D';
 
 // --- SHARED / STANDARD PAGES ---
 import ProductDetail from './pages/2d/ProductDetail';
-
 import Login from './pages/Login';
 import Register from './pages/Register';
 
 // --- ADMIN SECTION ---
-import AdminRoute from './components/admin/AdminRoute';
-import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 
-// --- AI SECTION--
+// --- AI SECTION ---
 import AIAnalysis from './pages/AIAnalysis';
 
 function App() {
-  const [is3DMode, setIs3DMode] = useState(true);
+  // 🌟 Initialize state by checking localStorage first
+  const [is3DMode, setIs3DMode] = useState(() => {
+    const savedMode = localStorage.getItem('is3DMode');
+    return savedMode !== null ? JSON.parse(savedMode) : true;
+  });
 
-  // 🌟 Grab the user from context
+  // 🌟 Save preference on change
+  useEffect(() => {
+    localStorage.setItem('is3DMode', JSON.stringify(is3DMode));
+  }, [is3DMode]);
+
   const { user } = useAuth();
-
-  // Check if they are an admin (adjust this if your DB just uses user.isAdmin)
   const isAdmin = user?.role === 'admin' || user?.isAdmin;
 
-  // 🌟 Force 2D mode immediately if an admin logs in
+  // 🌟 Force 2D mode for admins
   useEffect(() => {
     if (isAdmin) {
       setIs3DMode(false);
@@ -60,19 +63,15 @@ function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
-
-        {/* 1. The Classic 2D Navbar */}
         <Navbar is3DMode={is3DMode} />
 
-        {/* 2. The Persistent 3D Overlay */}
-        {/* 🌟 Hide the entire 3D overlay for admins so the Spatial Navbar doesn't render! */}
+        {/* Persistent 3D Overlay - hidden for admins */}
         {!isAdmin && (
           <Global3DOverlay is3DMode={is3DMode} setIs3DMode={setIs3DMode} />
         )}
 
         <main className="flex-grow relative">
           <Routes>
-
             {/* THE SMART ROUTER */}
             <Route
               path="/"
@@ -81,28 +80,15 @@ function App() {
                 : <LandingPage2D is3DMode={is3DMode} setIs3DMode={setIs3DMode} />
               }
             />
-            <Route
-              path="/products"
-              element={is3DMode ? <Products3D /> : <Products2D />}
-            />
-            <Route
-              path="/profile"
-              element={is3DMode ? <Profile3D /> : <Profile2D />}
-            />
-            <Route
-              path="/cart"
-              element={is3DMode ? <Cart3D /> : <Cart2D />}
-            />
-            <Route
-              path="/checkout"
-              element={is3DMode ? <Checkout3D /> : <Checkout2D />}
-            />
+            <Route path="/products" element={is3DMode ? <Products3D /> : <Products2D />} />
+            <Route path="/profile" element={is3DMode ? <Profile3D /> : <Profile2D />} />
+            <Route path="/cart" element={is3DMode ? <Cart3D /> : <Cart2D />} />
+            <Route path="/checkout" element={is3DMode ? <Checkout3D /> : <Checkout2D />} />
 
             {/* Standard Pages */}
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
 
             {/* Admin Routes */}
             <Route
@@ -122,7 +108,6 @@ function App() {
               }
             />
             <Route path="/ai-advisor" element={<AIAnalysis />} />
-
           </Routes>
         </main>
 

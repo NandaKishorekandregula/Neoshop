@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-
+const errorHandler = require('./middleware/errorHandler');
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -50,6 +50,8 @@ mongoose.connect(process.env.MONGODB_URI)
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to NeoShop API' });
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

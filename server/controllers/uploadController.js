@@ -1,52 +1,23 @@
-const cloudinary = require('../config/cloudinary');
+// server/controllers/uploadController.js
+const uploadService = require('../services/uploadService');
+const catchAsync = require('../utils/catchAsync');
 
 // Upload single image
-exports.uploadImage = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
-
-        res.json({
-            url: req.file.path,
-            publicId: req.file.filename
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+exports.uploadImage = catchAsync(async (req, res) => {
+    // req.file is populated by your multer middleware before this runs
+    const imageData = await uploadService.processSingleUpload(req.file);
+    res.json(imageData);
+});
 
 // Upload multiple images
-exports.uploadMultiple = async (req, res) => {
-    try {
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ error: 'No files uploaded' });
-        }
-
-        const urls = req.files.map(file => ({
-            url: file.path,
-            publicId: file.filename
-        }));
-
-        res.json({ images: urls });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+exports.uploadMultiple = catchAsync(async (req, res) => {
+    // req.files is populated by multer
+    const imagesData = await uploadService.processMultipleUploads(req.files);
+    res.json({ images: imagesData });
+});
 
 // Delete image
-exports.deleteImage = async (req, res) => {
-    try {
-        const { publicId } = req.body;
-
-        if (!publicId) {
-            return res.status(400).json({ error: 'Public ID required' });
-        }
-
-        const result = await cloudinary.uploader.destroy(publicId);
-
-        res.json({ message: 'Image deleted', result });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+exports.deleteImage = catchAsync(async (req, res) => {
+    const result = await uploadService.deleteImage(req.body.publicId);
+    res.json(result);
+});
