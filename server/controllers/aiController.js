@@ -12,8 +12,10 @@ exports.analyzeFromProfile = catchAsync(async (req, res) => {
     res.json({ success: true, analysis, recommendations });
 });
 
+// NOW accepts ?occasion=wedding so tabs actually filter products
 exports.getOutfitProducts = catchAsync(async (req, res) => {
-    const data = await aiService.getOutfitProducts(req.user.id);
+    const occasion = req.query.occasion || 'daily_casual';
+    const data = await aiService.getOutfitProducts(req.user.id, occasion);
     res.json({ success: true, ...data });
 });
 

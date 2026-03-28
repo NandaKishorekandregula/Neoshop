@@ -1,12 +1,13 @@
 # python-ai/skin_analyzer.py
 # Main analysis pipeline — integrates all 4 fixes in sequence
 
-import google.generativeai as genai
-from PIL import Image
 import io
 import json
 import os
+import base64
+from PIL import Image
 from dotenv import load_dotenv
+from groq import Groq
 
 # Fix 1: lighting normalization
 from image_preprocessor import normalize_lighting
@@ -18,8 +19,9 @@ from color_engine import rgb_to_lab
 from contrast_analyzer import analyze_contrast
 
 load_dotenv()
-genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-model = genai.GenerativeModel('gemini-1.5-flash')
+
+# Initialize Groq Client
+client = Groq(api_key=os.getenv('GROQ_API_KEY'))
 
 INDIAN_SKIN_PROMPT = '''
 You are an expert in South Asian / Indian skin tone analysis for fashion.
@@ -50,17 +52,9 @@ Undertone: warm=golden/yellow | cool=pink/red | olive=greenish/muted (common Sou
 Rule: olive is very common in South Indians — never misclassify as cool
 '''
 
-
 async def analyze_skin_tone(image_bytes: bytes) -> dict:
     """
     Full 6-step analysis pipeline with all 4 fixes integrated.
-
-    Step 1 (Fix 1): Normalize lighting — remove room light color cast
-    Step 2 (Fix 2): Segment skin — isolate pure skin pixels only
-    Step 3:         Get average skin color from segmented pixels
-    Step 4:         Send skin-only image to Gemini for classification
-    Step 5 (Fix 4): Analyze hair/contrast from original normalized image
-    Step 6:         Return complete structured result
     """
     try:
         # ── Step 1: Normalize lighting (Fix 1) ───────────────────────
@@ -81,26 +75,48 @@ async def analyze_skin_tone(image_bytes: bytes) -> dict:
         avg_color = get_average_skin_color(skin_pixels)
         print(f"[Step 3] Avg skin RGB: R={avg_color['r']} G={avg_color['g']} B={avg_color['b']}")
 
-        # ── Step 4: Send skin-only image to Gemini ────────────────────
-        # create_skin_only_image makes a 200x200 image of ONLY skin pixels
-        # Gemini cannot be confused by beard/hair/background
+        # ── Step 4: Send skin-only image to Groq ────────────────────
         skin_image = create_skin_only_image(skin_pixels)
-        response = model.generate_content([INDIAN_SKIN_PROMPT, skin_image])
+        
+        # 1. Force the image to standard RGB to prevent transparency bugs
+        skin_image = skin_image.convert("RGB") 
+        
+        buffered = io.BytesIO()
+        # 2. Save it as a PNG instead of JPEG
+        skin_image.save(buffered, format="PNG") 
+        base64_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        
+        # 3. Update the data URI to match PNG
+        img_url = f"data:image/png;base64,{base64_image}" 
 
-        text = response.text.strip()
-        text = text.replace('```json', '').replace('```', '').strip()
-        gemini_data = json.loads(text)
+        # Using Groq's official vision model
+        chat_completion = client.chat.completions.create(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": INDIAN_SKIN_PROMPT},
+                        {"type": "image_url", "image_url": {"url": img_url}}
+                    ]
+                }
+            ],
+            # Force JSON output to prevent parsing errors
+            response_format={"type": "json_object"}
+        )
+
+        text = chat_completion.choices[0].message.content.strip()
+        groq_data = json.loads(text)
 
         required = ['depth', 'undertone', 'confidence', 'seasonal_type', 'notes']
         for field in required:
-            if field not in gemini_data:
-                raise ValueError(f'Gemini response missing field: {field}')
+            if field not in groq_data:
+                raise ValueError(f'Groq response missing field: {field}')
 
-        profile_key = f"{gemini_data['depth']}_{gemini_data['undertone']}"
-        print(f"[Step 4] Profile: {profile_key} (confidence: {gemini_data['confidence']}%)")
+        profile_key = f"{groq_data['depth']}_{groq_data['undertone']}"
+        print(f"[Step 4] Profile: {profile_key} (confidence: {groq_data['confidence']}%)")
 
         # ── Step 5: Contrast analysis (Fix 4) ─────────────────────────
-        # Get skin L* (lightness) in CIELAB for contrast calculation
         skin_L, _, _ = rgb_to_lab(avg_color['r'], avg_color['g'], avg_color['b'])
         contrast_result = analyze_contrast(normalized_bytes, skin_L)
         if contrast_result['success']:
@@ -112,11 +128,11 @@ async def analyze_skin_tone(image_bytes: bytes) -> dict:
         return {
             'success':         True,
             'profileKey':      profile_key,
-            'depth':           gemini_data['depth'],
-            'undertone':       gemini_data['undertone'],
-            'confidence':      gemini_data['confidence'],
-            'seasonalType':    gemini_data['seasonal_type'],
-            'geminiNotes':     gemini_data['notes'],
+            'depth':           groq_data['depth'],
+            'undertone':       groq_data['undertone'],
+            'confidence':      groq_data['confidence'] / 100, # Divided by 100 to fix frontend math
+            'seasonalType':    groq_data['seasonal_type'],
+            'geminiNotes':     groq_data['notes'], # Kept the key name same so your frontend doesn't break
             'avgSkinColor':    avg_color,
             'skinLightness':   round(skin_L, 1),
             'contrastProfile': contrast_result if contrast_result['success'] else None,
@@ -128,6 +144,8 @@ async def analyze_skin_tone(image_bytes: bytes) -> dict:
         }
 
     except json.JSONDecodeError as e:
-        return {'success': False, 'error': f'Gemini parse error: {str(e)}'}
+        print(f"🚨 GROQ JSON ERROR: {str(e)}") 
+        return {'success': False, 'error': f'Groq parse error: {str(e)}'}
     except Exception as e:
+        print(f"🚨 PIPELINE ERROR: {str(e)}") 
         return {'success': False, 'error': f'Analysis failed: {str(e)}'}
