@@ -9,3 +9,4 @@ opencv-python==4.8.1.78
 mediapipe==0.10.7
 pyciede2000==0.0.21
 numpy==1.26.2
+groq==0.4.2
