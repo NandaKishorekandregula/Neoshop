@@ -4,11 +4,27 @@ import { Environment, Float, ContactShadows } from '@react-three/drei';
 import ShoeModel from '../../components/3d/ShoeModel';
 // 🌟 Import Auth Context
 import { useAuth } from '../../context/AuthContext';
+// 🌟 Import routing hook (assuming react-router-dom)
+import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage2D({ is3DMode, setIs3DMode }) {
     // 🌟 Check if the user is an admin
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin' || user?.isAdmin;
+
+    // 🌟 Initialize navigation
+    const navigate = useNavigate();
+
+    // 🌟 Handle AI Advisor Button Click
+    const handleAIAdvisorClick = () => {
+        if (user) {
+            // Redirect to AI advisor if logged in
+            navigate('/ai-advisor');
+        } else {
+            // Redirect to login if not logged in
+            navigate('/login');
+        }
+    };
 
     return (
         <div className="w-full h-[calc(100vh-80px)] bg-[#F8F9FE] relative flex items-center justify-center overflow-hidden">
@@ -48,12 +64,10 @@ export default function LandingPage2D({ is3DMode, setIs3DMode }) {
                     <h1 className="text-[8vw] md:text-7xl font-black text-gray-900 leading-tight tracking-tighter mb-4">
                         Classic <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Lookbook.</span>
                     </h1>
-                    <p className="text-gray-500 font-medium text-xl max-w-md mb-8">
-                        Browse the latest curations from your AI Stylist in beautiful, high-resolution 2D photography.
+                    {/* 🌟 Updated Description */}
+                    <p className="text-gray-500 font-medium text-xl max-w-md mb-8 leading-relaxed">
+                        Step into our immersive 3D mode guided by your personal AI Advisor. Simply upload a profile photo, and our intelligent stylist will recommend the perfect outfits and colors perfectly matched to your skin tone and style.
                     </p>
-                    <button className="px-8 py-4 bg-gray-900 text-white font-bold rounded-full shadow-xl hover:-translate-y-1 hover:shadow-purple-500/30 transition-all duration-300 pointer-events-auto">
-                        Shop Collection
-                    </button>
                 </div>
 
             </div>
@@ -61,7 +75,7 @@ export default function LandingPage2D({ is3DMode, setIs3DMode }) {
             {/* --- THE TOGGLE SWITCH --- */}
             {/* 🌟 Wrapped in a condition: Only render this UI if the user is NOT an admin */}
             {!isAdmin && (
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4">
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-4">
                     <span className="text-xs font-bold tracking-widest text-gray-400 uppercase drop-shadow-sm">Select Experience</span>
                     <div onClick={() => setIs3DMode(!is3DMode)} className="relative flex items-center w-[280px] h-[64px] bg-[#F8F9FE] rounded-full p-2 cursor-pointer shadow-[inset_6px_6px_12px_#dce1f0,inset_-6px_-6px_12px_#ffffff]">
                         <div className="absolute w-full flex justify-between px-8 text-gray-400 font-bold z-0 pointer-events-none text-[11px] tracking-wider">
@@ -74,6 +88,27 @@ export default function LandingPage2D({ is3DMode, setIs3DMode }) {
                     </div>
                 </div>
             )}
+
+            {/* --- 🌟 FLOATING AI ADVISOR BUTTON --- */}
+            <button
+                onClick={handleAIAdvisorClick}
+                className="fixed bottom-8 right-8 h-14 px-6 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-full shadow-[0_10px_25px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 text-white hover:scale-105 hover:-translate-y-1 transition-all duration-300 z-50 group border-2 border-white/20"
+                aria-label="Ask AI Advisor"
+            >
+                {/* Sparkles / Magic Icon */}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2.5}
+                    stroke="currentColor"
+                    className="w-6 h-6 group-hover:animate-pulse"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09l2.846.813-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                </svg>
+                {/* 🌟 New Button Text */}
+                <span className="font-bold tracking-wide">AI Advisor</span>
+            </button>
 
         </div>
     );
