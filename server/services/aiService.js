@@ -72,7 +72,7 @@ const runPythonPipeline = async (imageBuffer, mimetype = 'image/jpeg') => {
 
         const response = await axios.post(`${PYTHON_URL}/analyze`, form, {
             headers: form.getHeaders(),
-            timeout: 15000 // Reduced timeout for faster fallback during demo
+            timeout: 60000 // Reduced timeout for faster fallback during demo
         });
 
         const data = response.data;
