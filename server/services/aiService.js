@@ -1,6 +1,6 @@
 // server/services/aiService.js
 const axios = require('axios');
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const FormData = require('form-data');
 const User = require('../models/User');
 const Product = require('../models/Product');
@@ -8,8 +8,7 @@ const SkinAnalysis = require('../models/SkinAnalysis');
 const cloudinary = require('../config/cloudinary');
 const AppError = require('../utils/AppError');
 
-// Initialize the new 2026 GenAI SDK
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const PYTHON_URL = process.env.PYTHON_AI_URL || 'http://localhost:8000';
 
 // ─────────────────────────────────────────────────────────────────────
@@ -205,19 +204,24 @@ profileKey MUST be exactly depth_undertone (e.g. "wheatish_medium_warm").
 
 const runGeminiAnalysis = async (base64Image) => {
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3.8-flash',
-            contents: [
-                GEMINI_SKIN_PROMPT,
-                { inlineData: { data: base64Image, mimeType: 'image/jpeg' } }
-            ],
-            config: {
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-3.6-flash',
+            generationConfig: {
                 temperature: 0.1,
-                responseMimeType: 'application/json'
+                responseMimeType: "application/json", 
             }
         });
 
-        const text = response.text;
+        const imagePart = {
+            inlineData: {
+                data: base64Image,
+                mimeType: "image/jpeg"
+            }
+        };
+
+        const result = await model.generateContent([GEMINI_SKIN_PROMPT, imagePart]);
+        const text = result.response.text();
+        
         const parsed = JSON.parse(text);
 
         const required = ['depth', 'undertone', 'profileKey', 'confidence', 'bestColors', 'avoidColors'];
@@ -489,15 +493,16 @@ Return ONLY valid JSON — no markdown:
 `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3.8-flash',
-            contents: prompt,
-            config: {
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-3.6-flash    ',
+            generationConfig: {
                 temperature: 0.3,
-                responseMimeType: 'application/json'
+                responseMimeType: "application/json", 
             }
         });
-        return JSON.parse(response.text);
+
+        const result = await model.generateContent(prompt);
+        return JSON.parse(result.response.text());
     } catch (err) {
         console.error('[Gemini] Outfit suggestion error:', err.message);
         throw new AppError('Failed to generate outfit suggestion', 502);
