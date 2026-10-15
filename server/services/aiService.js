@@ -1,6 +1,6 @@
 // server/services/aiService.js
 const axios = require('axios');
-const Groq = require('groq-sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const FormData = require('form-data');
 const User = require('../models/User');
 const Product = require('../models/Product');
@@ -8,7 +8,7 @@ const SkinAnalysis = require('../models/SkinAnalysis');
 const cloudinary = require('../config/cloudinary');
 const AppError = require('../utils/AppError');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const PYTHON_URL = process.env.PYTHON_AI_URL || 'http://localhost:8000';
 
 // ─────────────────────────────────────────────────────────────────────
@@ -154,7 +154,7 @@ const runPythonPipeline = async (imageBuffer, mimetype = 'image/jpeg') => {
         };
     } catch (err) {
         if (err.code === 'ECONNREFUSED') {
-            console.warn('[Python] Service not running — Groq fallback active');
+            console.warn('[Python] Service not running — Gemini fallback active');
         } else {
             console.warn('[Python] Error:', err.message);
         }
@@ -163,9 +163,9 @@ const runPythonPipeline = async (imageBuffer, mimetype = 'image/jpeg') => {
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// PRIVATE: Groq vision — second opinion + extra color suggestions
+// PRIVATE: Gemini vision — second opinion + extra color suggestions
 // ─────────────────────────────────────────────────────────────────────
-const GROQ_SKIN_PROMPT = `
+const GEMINI_SKIN_PROMPT = `
 You are an expert in South Asian / Indian skin tone analysis for fashion.
 Analyze the skin tone in this photo carefully.
 
@@ -202,26 +202,27 @@ Bad: Terracotta, Turmeric Yellow, Cobalt Blue, Burnt Sienna (too specific)
 profileKey MUST be exactly depth_undertone (e.g. "wheatish_medium_warm").
 `;
 
-const runGroqAnalysis = async (base64Image) => {
+const runGeminiAnalysis = async (base64Image) => {
     try {
-        const response = await groq.chat.completions.create({
-            model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-            messages: [{
-                role: 'user',
-                content: [
-                    { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } },
-                    { type: 'text', text: GROQ_SKIN_PROMPT }
-                ]
-            }],
-            temperature: 0.1,
-            max_tokens: 600
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-1.5-flash',
+            generationConfig: {
+                temperature: 0.1,
+                responseMimeType: "application/json", 
+            }
         });
 
-        const text = response.choices[0]?.message?.content?.trim();
-        if (!text) throw new Error('Empty response from Groq');
+        const imagePart = {
+            inlineData: {
+                data: base64Image,
+                mimeType: "image/jpeg"
+            }
+        };
 
-        const cleaned = text.replace(/```json|```/g, '').trim();
-        const parsed = JSON.parse(cleaned);
+        const result = await model.generateContent([GEMINI_SKIN_PROMPT, imagePart]);
+        const text = result.response.text();
+        
+        const parsed = JSON.parse(text);
 
         const required = ['depth', 'undertone', 'profileKey', 'confidence', 'bestColors', 'avoidColors'];
         for (const field of required) {
@@ -234,59 +235,59 @@ const runGroqAnalysis = async (base64Image) => {
             parsed.profileKey = `${parsed.depth}_${parsed.undertone}`;
         }
 
-        return { source: 'groq', ...parsed };
+        return { source: 'gemini', ...parsed };
     } catch (err) {
-        console.warn('[Groq] Analysis error:', err.message);
+        console.warn('[Gemini] Analysis error:', err.message);
         return null;
     }
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// PRIVATE: Merge Python + Groq — Python wins on science, Groq adds colors
+// PRIVATE: Merge Python + Gemini — Python wins on science, Gemini adds colors
 // ─────────────────────────────────────────────────────────────────────
-const mergeResults = (pythonResult, groqResult) => {
-    if (!pythonResult && !groqResult) {
+const mergeResults = (pythonResult, geminiResult) => {
+    if (!pythonResult && !geminiResult) {
         throw new AppError('Both AI services failed. Please try again.', 503);
     }
-    if (!pythonResult) return { ...groqResult, aiSources: ['groq'] };
-    if (!groqResult) return { ...pythonResult, aiSources: ['python'] };
+    if (!pythonResult) return { ...geminiResult, aiSources: ['gemini'] };
+    if (!geminiResult) return { ...pythonResult, aiSources: ['python'] };
 
-    const bothAgree = pythonResult.depth === groqResult.depth &&
-        pythonResult.undertone === groqResult.undertone;
+    const bothAgree = pythonResult.depth === geminiResult.depth &&
+        pythonResult.undertone === geminiResult.undertone;
 
     if (!bothAgree) {
-        console.log(`[Merge] Python: ${pythonResult.profileKey} vs Groq: ${groqResult.profileKey} — Python wins`);
+        console.log(`[Merge] Python: ${pythonResult.profileKey} vs Gemini: ${geminiResult.profileKey} — Python wins`);
     }
 
     const mergedConfidence = bothAgree
         ? Math.min(99, pythonResult.confidence + 15)
-        : Math.round((pythonResult.confidence + groqResult.confidence) / 2);
+        : Math.round((pythonResult.confidence + geminiResult.confidence) / 2);
 
     const combinedBestColors = [
         ...pythonResult.bestColors,
-        ...groqResult.bestColors.filter(c => !pythonResult.bestColors.includes(c))
+        ...geminiResult.bestColors.filter(c => !pythonResult.bestColors.includes(c))
     ].slice(0, 12);
 
     const combinedAvoidColors = [
         ...pythonResult.avoidColors,
-        ...groqResult.avoidColors.filter(c => !pythonResult.avoidColors.includes(c))
+        ...geminiResult.avoidColors.filter(c => !pythonResult.avoidColors.includes(c))
     ].slice(0, 6);
 
     return {
         depth: pythonResult.depth,
         undertone: pythonResult.undertone,
         profileKey: pythonResult.profileKey,
-        seasonalType: pythonResult.seasonalType || groqResult.seasonalType,
-        geminiNotes: pythonResult.geminiNotes || groqResult.geminiNotes,
+        seasonalType: pythonResult.seasonalType || geminiResult.seasonalType,
+        geminiNotes: pythonResult.geminiNotes || geminiResult.geminiNotes,
         contrastProfile: pythonResult.contrastProfile || null,
         processingMeta: pythonResult.processingMeta || null,
         skinLightness: pythonResult.skinLightness || null,
         bestColors: combinedBestColors,
         avoidColors: combinedAvoidColors,
         confidence: mergedConfidence,
-        aiSources: ['python', 'groq'],
+        aiSources: ['python', 'gemini'],
         bothAgreed: bothAgree,
-        groqProfileKey: groqResult.profileKey
+        geminiProfileKey: geminiResult.profileKey
     };
 };
 
@@ -349,12 +350,12 @@ exports.processNewPhotoAnalysis = async (userId, file) => {
         { folder: 'neoshop/skin-analysis', transformation: [{ width: 800, height: 800, crop: 'limit' }] }
     );
 
-    const [pythonResult, groqResult] = await Promise.all([
+    const [pythonResult, geminiResult] = await Promise.all([
         runPythonPipeline(file.buffer, file.mimetype),
-        runGroqAnalysis(base64)
+        runGeminiAnalysis(base64)
     ]);
 
-    const merged = mergeResults(pythonResult, groqResult);
+    const merged = mergeResults(pythonResult, geminiResult);
     await saveAnalysisToDb(userId, cloudResult.secure_url, merged);
 
     return {
@@ -376,12 +377,12 @@ exports.processProfilePhotoAnalysis = async (userId) => {
     const imageBuffer = Buffer.from(imageResponse.data);
     const base64 = imageBuffer.toString('base64');
 
-    const [pythonResult, groqResult] = await Promise.all([
+    const [pythonResult, geminiResult] = await Promise.all([
         runPythonPipeline(imageBuffer, 'image/jpeg'),
-        runGroqAnalysis(base64)
+        runGeminiAnalysis(base64)
     ]);
 
-    const merged = mergeResults(pythonResult, groqResult);
+    const merged = mergeResults(pythonResult, geminiResult);
     await saveAnalysisToDb(userId, user.profilePhoto, merged);
 
     return {
@@ -422,11 +423,10 @@ exports.getOutfitProducts = async (userId, occasion = 'daily_casual') => {
             products = await Product.find({
                 category,
                 inStock: true,
-                $or: queryColors.map(color => ({
-                    $or: [
-                        { 'colorData.name': { $regex: color, $options: 'i' } },
-                        { 'colorData.colorFamily': { $regex: color, $options: 'i' } },
-                        { colors: { $regex: color, $options: 'i' } }
+                $or: queryColors.map(color => ({$or: [
+                        { 'colorData.name': { $regex: color,$options: 'i' } },
+                        { 'colorData.colorFamily': { $regex: color,$options: 'i' } },
+                        { colors: { $regex: color,$options: 'i' } }
                     ]
                 }))
             }).limit(3);
@@ -440,7 +440,7 @@ exports.getOutfitProducts = async (userId, occasion = 'daily_casual') => {
         outfit[category] = products;
     }
 
-    // Get Groq text advice for this specific occasion
+    // Get Gemini text advice for this specific occasion
     let occasionAdvice = null;
     try {
         occasionAdvice = await exports.getOutfitSuggestion(userId, occasion);
@@ -453,13 +453,13 @@ exports.getOutfitProducts = async (userId, occasion = 'daily_casual') => {
         recommendedColors: recommendedColors.slice(0, 8),
         occasion,
         occasionLabel: occConfig.label,
-        occasionAdvice,  // Groq's text advice card
+        occasionAdvice,  
         outfit
     };
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// PUBLIC: Occasion outfit text advice from Groq
+// PUBLIC: Occasion outfit text advice from Gemini
 // ─────────────────────────────────────────────────────────────────────
 exports.getOutfitSuggestion = async (userId, occasion) => {
     const user = await User.findById(userId);
@@ -493,17 +493,18 @@ Return ONLY valid JSON — no markdown:
 `;
 
     try {
-        const response = await groq.chat.completions.create({
-            model: 'llama-3.3-70b-versatile',
-            messages: [{ role: 'user', content: prompt }],
-            temperature: 0.3,
-            max_tokens: 400
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-1.5-flash',
+            generationConfig: {
+                temperature: 0.3,
+                responseMimeType: "application/json", 
+            }
         });
-        const text = response.choices[0]?.message?.content?.trim();
-        const cleaned = text.replace(/```json|```/g, '').trim();
-        return JSON.parse(cleaned);
+
+        const result = await model.generateContent(prompt);
+        return JSON.parse(result.response.text());
     } catch (err) {
-        console.error('[Groq] Outfit suggestion error:', err.message);
+        console.error('[Gemini] Outfit suggestion error:', err.message);
         throw new AppError('Failed to generate outfit suggestion', 502);
     }
 };
@@ -527,11 +528,10 @@ exports.getPersonalizedProducts = async (userId, occasion, page = 1, limit = 20)
     if (occasion) query.occasion = { $in: [occasion] };
 
     if (basicColors.length > 0) {
-        query.$or = basicColors.map(color => ({
-            $or: [
-                { 'colorData.name': { $regex: color, $options: 'i' } },
-                { 'colorData.colorFamily': { $regex: color, $options: 'i' } },
-                { colors: { $regex: color, $options: 'i' } }
+        query.$or = basicColors.map(color => ({$or: [
+                { 'colorData.name': { $regex: color,$options: 'i' } },
+                { 'colorData.colorFamily': { $regex: color,$options: 'i' } },
+                { colors: { $regex: color,$options: 'i' } }
             ]
         }));
     }
