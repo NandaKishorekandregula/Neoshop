@@ -205,7 +205,7 @@ profileKey MUST be exactly depth_undertone (e.g. "wheatish_medium_warm").
 const runGeminiAnalysis = async (base64Image) => {
     try {
         const model = genAI.getGenerativeModel({ 
-            model: 'gemini-1.5-flash',
+            model: 'gemini-3.6-flash',
             generationConfig: {
                 temperature: 0.1,
                 responseMimeType: "application/json", 
@@ -494,7 +494,7 @@ Return ONLY valid JSON — no markdown:
 
     try {
         const model = genAI.getGenerativeModel({ 
-            model: 'gemini-1.5-flash',
+            model: 'gemini-3.6-flash    ',
             generationConfig: {
                 temperature: 0.3,
                 responseMimeType: "application/json", 
