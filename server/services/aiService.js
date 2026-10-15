@@ -121,7 +121,7 @@ Use simple color names like Red, Orange, Navy, Brown, Beige, White, Black, Olive
 const runGroqAnalysis = async (base64Image) => {
     try {
         const response = await groq.chat.completions.create({
-            model: 'llama-3.2-11b-vision-preview', // Active Groq Vision Model
+            model: 'qwen/qwen3.8-27b', // Active Groq Vision Model
             messages: [{
                 role: 'user',
                 content: [
@@ -272,7 +272,7 @@ Return ONLY valid JSON:
 
     try {
         const response = await groq.chat.completions.create({
-            model: 'llama-3.1-8b-instant', // Fast, reliable Groq model
+            model: 'openai/gpt-oss-20b', // Fast, reliable Groq model
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
             response_format: { type: "json_object" }
